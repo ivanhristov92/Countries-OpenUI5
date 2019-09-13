@@ -1,0 +1,55 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+
+	<ViewSettingsDialog
+		id="viewSettingsDialog"
+		confirm=".onConfirmViewSettingsDialog">
+		<sortItems>
+			<ViewSettingsItem
+				text="Sort By Name"
+				key="name"
+				selected="true"/>
+			<ViewSettingsItem
+				text="Population"
+				key="population"/>
+		</sortItems>
+		<filterItems>
+			<ViewSettingsFilterItem
+				id="filterItems"
+				text="Language"
+				items="{masterView>/allLanguages}"
+				multiSelect="false">
+				<items>
+					<ViewSettingsItem
+						text="{masterView>name}"
+						key="language"/>
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem
+				id="filterItems2"
+				text="Population"
+				items="{masterView>/allPopulationNumbers}"
+				multiSelect="false">
+				<items>
+					<ViewSettingsItem
+						text="{masterView>}"
+						key="population"/>
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem
+				id="filterItems3"
+				text="Currency"
+				items="{masterView>/allCurrencies}"
+				multiSelect="false">
+				<items>
+					<ViewSettingsItem
+						text="{masterView>name}"
+						key="currency"/>
+				</items>
+			</ViewSettingsFilterItem>
+
+		</filterItems>
+
+	</ViewSettingsDialog>
+</core:FragmentDefinition>

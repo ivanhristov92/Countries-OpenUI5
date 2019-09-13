@@ -1,0 +1,265 @@
+<mvc:View
+	controllerName="sap.ui.demo.masterdetail.controller.Master"
+	xmlns="sap.m"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:l="sap.ui.layout"
+	xmlns:base="sap.ui.base"
+	xmlns:tool="sap.ui.demo.masterdetail.control"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:core="sap.ui.core"
+	xmlns:tnt="sap.tnt"
+	xmlns:mvc="sap.ui.core.mvc">
+
+	<semantic:SemanticPage
+		id="masterPage"
+		preserveHeaderStateOnScroll="true"
+		toggleHeaderOnTitleClick="false">
+		<semantic:titleHeading>
+			<Title
+				id="masterPageTitle"
+				text="{masterView>/title}"
+				level="H2"/>
+		</semantic:titleHeading>
+		<semantic:content>
+			<l:BlockLayout id="BlockLayout" background="">
+				<l:BlockLayoutRow accentCells="Accent1">
+					<l:BlockLayoutCell>
+						<Panel expandable="false">
+							<headerToolbar>
+								<Toolbar>
+									<Title
+										text="Population Statistics"
+										level="H3"
+										textAlign="Left"/>
+									<ToolbarSpacer/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<l:ResponsiveSplitter
+									position="Center"
+									width="100%"
+									defaultIndent="L2"
+									containerQuery="true">
+									<l:PaneContainer>
+										<l:SplitPane requiredParentWidth="500" id="default">
+											<l:VerticalLayout class="sapUiContentPadding">
+												<Table
+													noDataText="Add the first row"
+													items="{masterView>/statisticControls}">
+													<columns>
+														<Column>
+															<header>
+																<Text text="Region" />
+															</header>
+														</Column>
+														<Column>
+															<header>
+																<Text text="Country" />
+															</header>
+														</Column>
+														<Column hAlign="Center"></Column>
+													</columns>
+													<items>
+														<ColumnListItem>
+															<Select
+																forceSelection="false"
+																change="onStatsRegionSelected"
+																selectedKey="{masterView>region}"
+																app:itemId="{masterView>id}"
+																items="{
+																		path: 'masterView>/allRegions',
+																		sorter: { path: '/' }
+																	}">
+																<core:Item key="{masterView>}" text="{masterView>}" />
+															</Select>
+															<Select
+																forceSelection="false"
+																change="onStatsCountrySelected"
+																app:itemId="{masterView>id}"
+																selectedKey="{masterView>country}"
+																enabled="{masterView>showCountries}"
+																width="100%"
+																items="{
+																		path: 'masterView>countriesForRegion',
+																		sorter: { path: '/' }
+																	}">
+																<core:Item key="{masterView>name}" text="{masterView>name}" />
+															</Select>
+															<Button app:itemId="{masterView>id}" key="{masterView>id}" class="roundButton" icon="sap-icon://delete" tooltip="Справки" type="Accept" press="onRemoveStatsRow" />
+
+														</ColumnListItem>
+													</items>
+												</Table>
+												<Button class="roundButton" icon="sap-icon://add" tooltip="" type="Accept" press="onAddCountryStatsRow" />
+											</l:VerticalLayout>
+										</l:SplitPane>
+										<l:SplitPane requiredParentWidth="600" id="default2">
+											<Panel
+												id="statisticsContainer"
+
+												accessibleRole="Region"
+												class="sapUiNoContentPadding">
+
+											</Panel>
+										</l:SplitPane>
+									</l:PaneContainer>
+								</l:ResponsiveSplitter>
+							</content>
+						</Panel>
+					</l:BlockLayoutCell>
+				</l:BlockLayoutRow>
+
+				<l:BlockLayoutRow>
+					<l:BlockLayoutCell>
+						<!-- For client side filtering add this to the items attribute: parameters: {operationMode: 'Client'}}" -->
+						<Table
+							id="list"
+							width="auto"
+							class="sapFDynamicPageAlignContent"
+							items="{masterView>/visibleCountries}"
+							busyIndicatorDelay="{masterView>/delay}"
+							noDataText="{masterView>/noDataText}"
+							mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
+							growing="true"
+							growingScrollToLoad="true"
+							updateFinished=".onUpdateFinished"
+							selectionChange=".onSelectionChange">
+							<infoToolbar>
+								<Toolbar
+									active="true"
+									id="filterBar"
+									visible="{masterView>/isFilterBarVisible}"
+									press=".onOpenViewSettings">
+									<Title
+										id="filterBarLabel"
+										text="{masterView>/filterBarLabel}"
+										level="H3"/>
+								</Toolbar>
+							</infoToolbar>
+							<headerToolbar>
+
+								<OverflowToolbar>
+
+									<Button class="roundButton" icon="sap-icon://nav-back" tooltip="Справки" type="Accept" press="onPrevPage" />
+									<Input type="Number"
+										   placeholder="Current Page"
+										   fieldWidth="25%"
+										   description=""
+										   enabled="false"
+										   value="{masterView>/pagination/currentPage}">
+										<layoutData>
+											<OverflowToolbarLayoutData
+												minWidth="20px"
+												maxWidth="20px"
+												shrinkable="true"
+												priority="NeverOverflow"/>
+										</layoutData>
+									</Input>
+									<Button class="roundButton" icon="sap-icon://navigation-right-arrow" tooltip="Справки" type="Accept" press="onNextPage"/>
+									<Input type="Text"
+										   placeholder="All"
+										   fieldWidth="25%"
+										   description="Total pages"
+										   enabled="false"
+										   value="{masterView>/pagination/totalPages}">
+										<layoutData>
+											<OverflowToolbarLayoutData
+												minWidth="150px"
+												maxWidth="240px"
+												shrinkable="true"
+												priority="NeverOverflow"/>
+										</layoutData>
+									</Input>
+									<Input type="Number"
+										   placeholder="All"
+										   fieldWidth="25%"
+										   description="Items per page"
+										   value="{masterView>/pagination/itemsPerPage}"
+										   liveChange="onResultsPerPageChange">
+										<layoutData>
+											<OverflowToolbarLayoutData
+												minWidth="150px"
+												maxWidth="240px"
+												shrinkable="true"
+												priority="NeverOverflow"/>
+										</layoutData>
+									</Input>
+									<SearchField
+										id="searchField"
+										showRefreshButton="false"
+										tooltip="{i18ndata>masterSearchTooltip}"
+										search="onSearch"
+										liveChange="onSearchChange"
+										width="auto">
+										<layoutData>
+											<OverflowToolbarLayoutData
+												minWidth="150px"
+												maxWidth="240px"
+												shrinkable="true"
+												priority="NeverOverflow"/>
+										</layoutData>
+									</SearchField>
+
+									<ToolbarSpacer/>
+									<Button
+										id="sortButton"
+										press=".onOpenViewSettings"
+										icon="sap-icon://sort"
+										type="Transparent"/>
+								</OverflowToolbar>
+							</headerToolbar>
+							<columns>
+								<Column mergeDuplicates="true">
+									<header>
+										<Text text="Flag" />
+									</header>
+								</Column>
+								<Column mergeDuplicates="true">
+									<header>
+										<Text text="Name" />
+									</header>
+								</Column>
+								<Column mergeDuplicates="true">
+									<header>
+										<Text text="Population" />
+									</header>
+								</Column>
+								<Column
+									minScreenWidth="Tablet"
+									demandPopin="true"
+									hAlign="End" >
+									<header>
+										<Text text="Main Language" />
+									</header>
+								</Column>
+								<Column
+									minScreenWidth="Tablet"
+									demandPopin="true"
+									hAlign="Center" >
+									<header>
+										<Text text="Main Currency" />
+									</header>
+								</Column>
+
+							</columns>
+							<ColumnListItem>
+								<Image src="{masterView>flag}" width="40px"/>
+								<Text text="{masterView>name}" />
+								<ObjectNumber
+									number="{masterView>population}"/>
+								<Text text="{masterView>languages/0/name}" />
+								<Text text="{masterView>currencies/0/name}" />
+
+							</ColumnListItem>
+
+						</Table>
+					</l:BlockLayoutCell>
+				</l:BlockLayoutRow>
+			</l:BlockLayout>
+		</semantic:content>
+
+
+
+	</semantic:SemanticPage>
+</mvc:View>

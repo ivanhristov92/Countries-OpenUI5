@@ -1,0 +1,20 @@
+<mvc:View
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:base="sap.ui.base"
+	xmlns:tool="sap.ui.demo.masterdetail.control">
+	<l:BlockLayout
+		id="statisticsBlockLayout"
+		busy="false"
+		background="Dashboard">
+		<l:BlockLayoutRow
+			rowColorSet="ColorSet2">
+			<l:BlockLayoutCell>
+				<tool:D3ColumnChart id="chart" data="{masterView>/statisticControls}">
+					<base:ManagedObject/>
+				</tool:D3ColumnChart>
+			</l:BlockLayoutCell>
+		</l:BlockLayoutRow>
+	</l:BlockLayout>
+</mvc:View>
